@@ -13,12 +13,11 @@ rate, crude oil inventory) and sentiment scores. It is compared with a Naive
 
 - **Koopman Predictor Module (KPM):** a closed-form ridge-regression operator maps
   the CFB latent state to the price latent state and produces an initial forecast.
-- **Internal Trend Mining Module (ITM):** refines that forecast with a shared linear
-  operator and a small convolutional adaptation layer.
+- **Internal Trend Mining Module (ITM):** refines that forecast by completing partial
+  CFB information with a shared linear operator and a small convolutional adaptation layer.
 - **Series decomposition:** a moving average splits the price into trend and seasonal
   parts.
-- **External Trend Guide (ETG):** removed from this adaptation (`--node_number` is
-  accepted for backward compatibility and ignored).
+- **External Trend Guide (ETG):** removed from this adaptation 
 - **Loss:** a sum of three RMSE terms (price, behaviour, known-future behaviour).
 - **Training:** NAdam/Adam, learning rate halved each epoch (`--lradj type1`), early
   stopping on validation loss.
@@ -29,22 +28,22 @@ The imports expect this layout. Adjust it if your folders differ.
 
 ```
 .
-├── train.py                  # train and test one model
-├── grid_search.py            # hyperparameter grid search (Excel/CSV results)
-├── recursive_predict.py      # multi-day recursive forecast plot from a chosen date
-├── plot_window.py            # direct multi-day forecast plot from chosen dates
-├── naive_baseline.py         # Naive (persistence) baseline
+├── train.py                        # train and test one model
+├── grid_search.py                  # hyperparameter grid search (Excel/CSV results)
+├── recursive_predict.py            # multi-day recursive forecast plot from a chosen date
+├── plot_window.py                  # direct multi-day forecast plot from chosen dates
+├── sp500_ARMA-GARCH_and_naive      # runs the ARMA-GARCH and Naive forecast
 ├── requirements.txt
-├── dataset/                  # CSV files (see Section 4)
-├── checkpoints/              # saved models (created automatically)
-├── exp/                      # exp_basic.py, exp_craft.py
-├── data_provider/            # data_factory.py, data_loader.py
-├── models/                   # CRAFT.py
-│   └── craft_modules/        # decomposition.py
-├── base_model/               # mlp.py
-└── utils/                    # tools.py, metrics.py
-    ├── data/                 # scaler.py
-    └── Linear_Algebraic_Solution/   # LA_Solution.py (ridge regression)
+├── dataset/                        # CSV files (see Section 4)
+├── checkpoints/                    # saved models (created automatically)
+├── exp/                            # exp_basic.py, exp_craft.py
+├── data_provider/                  # data_factory.py, data_loader.py
+├── models/                         # CRAFT.py
+│   └── craft_modules/              # decomposition.py
+├── base_model/                     # mlp.py
+└── utils/                          # tools.py, metrics.py
+    ├── data/                       # scaler.py
+    └── Linear_Algebraic_Solution/  # LA_Solution.py (ridge regression)
 ```
 
 ## 3. Installation
@@ -54,37 +53,6 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
-
-### What to write in `requirements.txt`
-
-Third-party packages imported by the code:
-
-```
-torch
-numpy
-pandas
-matplotlib
-openpyxl
-```
-
-- `torch` (PyTorch) builds and trains the network.
-- `numpy` and `pandas` handle arrays and the CSV files.
-- `matplotlib` draws the forecast plots.
-- `openpyxl` writes the Excel results of `grid_search.py`.
-
-The standard-library imports (`argparse`, `os`, `csv`, `itertools`, and so on) do not
-go in the file. If you add the ARMA–GARCH baseline code to the repository, also add
-`statsmodels` and `arch`.
-
-For exact reproducibility, pin the versions you used. After a working run, execute:
-
-```bash
-pip freeze | grep -iE "^(torch|numpy|pandas|matplotlib|openpyxl)=="
-```
-
-(on Windows PowerShell: `pip freeze | findstr /i "torch numpy pandas matplotlib openpyxl"`)
-and paste the output, for example `torch==2.x.x`, into `requirements.txt`. Also write
-your Python version in this README.
 
 ## 4. Data
 
@@ -98,9 +66,7 @@ Put the CSV files in `dataset/` (or pass another folder with `--root_path`).
   the number of behaviour columns.
 - Both files must cover the same dates, in the same order.
 
-## Appendix A: Command-Line Interface and Reproducibility
-
-### A.1 Command-Line Arguments
+## Command-Line Arguments
 
 **Data and model**
 
@@ -164,7 +130,7 @@ The three split sizes must all be fractions that sum to 1, or all absolute row c
 
 `recursive_predict.py` needs a model trained with `--predict_window 1`.
 
-### A.2 Commands Used to Reproduce the Experiments
+## Commands Used to Reproduce the Experiments
 
 Run the commands from the repository root. Each Python file takes the hyperparameters
 above as command-line arguments.
@@ -174,7 +140,6 @@ above as command-line arguments.
 | `train.py` | Train the network and evaluate it | see below |
 | `grid_search.py` | Find the best hyperparameters by grid search | see below |
 | `recursive_predict.py` | Plot truth versus recursive forecasts from a chosen date | see below |
-| `naive_baseline.py` | Naive (persistence) baseline on the same windows | same data flags as `train.py` |
 | `plot_window.py` | Plot a direct multi-day forecast from chosen dates | same flags as `train.py`, plus `--anchor_date` |
 
 **Training**
@@ -238,5 +203,11 @@ python recursive_predict.py \
 
 ## Acknowledgements
 
-Based on the CRAFT architecture ([add the citation of the original paper]).
+Based on the CRAFT architecture 
+
+Zhang, Y., Bu, K., Zhuang, Z., Xie, T., Yu, Y., Li, D., Guo, Y., & Lv, D. (2025). CRAFT:
+Time series forecasting with cross-future behavior awareness. Proceedings of the
+Thirty-Fourth International Joint Conference on Artificial Intelligence (IJCAI-
+25), 7056–7064. https://doi.org/10.24963/ijcai.2025/785
+
 Supervised by Assoc Prof Xiang Liming.
