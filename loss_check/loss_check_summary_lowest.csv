@@ -1,0 +1,4 @@
+batch,batch_size,n_main,n_behavior,n_known,main_loss,behavior_loss,known_loss,total_loss,w_main,w_behavior,w_known,eps
+0,3,15,45,45,28.0915718,28.2808971,0.000100000005,56.3725662,1.0,1.0,1.0,1e-08
+1,3,15,45,45,28.5529041,21.0398846,0.000100000005,49.5928879,1.0,1.0,1.0,1e-08
+mean_of_dumped_batches,,,,,28.322238,24.6603909,0.000100000005,52.9827271,,,,
